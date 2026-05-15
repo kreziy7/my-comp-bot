@@ -1,0 +1,58 @@
+{
+  "start_welcome": "Assalomu alaykum, *Age Computers* botiga xush kelibsiz! 👋\n\nQuyidagi menyudan tanlang:",
+  "menu_browse": "🗂 Kategoriya boʻyicha",
+  "menu_search": "🔎 Qidiruv",
+  "menu_cart": "🛒 Mening savatim",
+  "menu_contact": "📞 Bogʻlanish",
+
+  "browse_pick_group": "📂 *Bo'limni tanlang:*",
+  "browse_pick_section": "📂 *{group}* — bo'limchani tanlang:",
+  "browse_section_empty": "Bu boʻlimda mahsulot topilmadi.",
+  "browse_back": "⬅ Orqaga",
+  "browse_back_to_groups": "⬅ Boʻlimlarga",
+  "browse_back_to_sections": "⬅ Bo'limchalarga",
+  "browse_back_to_list": "⬅ Roʻyxatga",
+
+  "product_add_to_cart": "➕ Savatga qoʻshish",
+  "product_price_on_request": "Narx — soʻrovga koʻra",
+  "product_contact_for_price": "📞 Narxni soʻrash",
+  "product_added": "✅ Savatga qoʻshildi: *{name}*",
+  "product_cant_add_no_price": "❗ Bu mahsulot narxi yoʻq. Narxni bilish uchun «Aloqaga chiqish»dan foydalaning.",
+
+  "search_prompt": "🔎 Qidirayotgan mahsulotni yozing (nomi yoki model code):",
+  "search_no_results": "Hech narsa topilmadi. Boshqa soʻz bilan urinib koʻring.",
+  "search_results": "🔎 Topildi: *{count}* ta natija",
+  "search_truncated": "_Eng yuqori 10 ta natija koʻrsatilmoqda_",
+
+  "cart_empty": "🛒 Savat boʻsh.",
+  "cart_title": "🛒 *Mening savatim:*",
+  "cart_total": "💰 *Jami:* ${total}",
+  "cart_remove": "❌ Olib tashlash",
+  "cart_clear": "🗑 Tozalash",
+  "cart_clear_confirm": "🗑 Savat tozalandi.",
+  "cart_checkout": "✅ Zakaz berish",
+  "cart_item_removed": "Olib tashlandi.",
+
+  "order_ask_name": "👤 Iltimos, ismingizni yozing:",
+  "order_ask_phone": "📱 Telefon raqamingizni yuboring (tugma bilan yoki +998 bilan boshlab matn yozing):",
+  "order_send_contact": "📱 Telefon raqamni yuborish",
+  "order_invalid_phone": "❗ Telefon raqam toʻgʻri emas. +998 bilan boshlab yozing yoki tugmadan foydalaning.",
+  "order_ask_note": "📝 Manzilingizni yuboring: pastdagi tugma orqali geolokatsiya bilan yoki matn bilan yozing. Izoh yozish ham mumkin. Agar kerak boʻlmasa «-» yuboring.",
+  "order_send_location": "📍 Geolokatsiyani yuborish",
+  "order_skip_note": "➡ Oʻtkazib yuborish",
+  "order_confirm": "Quyidagi maʼlumotlarni tasdiqlaysizmi?\n\n👤 *Ism:* {name}\n📱 *Telefon:* {phone}\n📝 *Izoh:* {note}\n\n{cart}",
+  "order_confirm_yes": "✅ Tasdiqlash",
+  "order_confirm_no": "❌ Bekor qilish",
+  "order_cancelled": "Zakaz bekor qilindi.",
+  "order_done": "✅ Zakazingiz qabul qilindi! Operator tez orada siz bilan bogʻlanadi.\n\nRahmat! 🙏",
+  "order_error": "Texnik xato yuz berdi. Iltimos, keyinroq urinib koʻring.",
+
+  "contact_info": "📞 *Age Computers*\n\n📱 Telefon: [+998 88-331-11-33](tel:+998883311133)\n📍 Manzil: [Farogat street, Toshkent](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Ish vaqti: 9:00 — 18:30",
+
+  "about": "*Age Computers Bot*\n\nKomputer, noutbuk, printer va aksessuarlar do'koni.\nMahsulotlarni tanlang, savatga qoʻshing va zakaz bering.",
+  "help": "Buyruqlar:\n/start — boshlash\n/help — yordam\n/about — bot haqida\n/myid — sizning chat ID\n\nMenu tugmalaridan foydalaning.\n\n*Admin uchun:*\n/orders — soʻnggi 10 zakaz\n/today — bugungi zakazlar\n/stats — statistika\n/order <id> — bitta zakazni koʻrish",
+
+  "error_generic": "Texnik xato. Qaytadan urinib koʻring.",
+  "back": "⬅ Orqaga",
+  "main_menu": "🏠 Asosiy menyu"
+}

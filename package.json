@@ -1,0 +1,21 @@
+{
+  "name": "my-comp-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "explore": "node explore_xlsx.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": ["telegram", "bot", "telegraf", "age-computers"],
+  "author": "doniklaud235@gmail.com",
+  "license": "ISC",
+  "description": "Age Computers shop Telegram bot — XLSX catalog browser + cart + orders",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "telegraf": "^4.16.3",
+    "xlsx": "^0.18.5"
+  }
+}
