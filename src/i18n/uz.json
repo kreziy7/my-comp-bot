@@ -1,9 +1,51 @@
 {
   "start_welcome": "Assalomu alaykum, *Age Computers* botiga xush kelibsiz! 👋\n\nQuyidagi menyudan tanlang:",
+
+  "menu_buy": "🛒 Xarid qilish",
+  "menu_service": "🔧 Service",
+  "menu_contact": "📞 Bog'lanish",
+
   "menu_browse": "🗂 Kategoriya boʻyicha",
   "menu_search": "🔎 Qidiruv",
   "menu_cart": "🛒 Mening savatim",
-  "menu_contact": "📞 Bogʻlanish",
+
+  "buy_intro": "🛒 *Xarid qilish*\n\n📍 *Do'kon manzili:*\nFarogat street, Toshkent\n🕐 *Ish vaqti:* 9:00 — 18:30\n📱 *Telefon:* +998 88-331-11-33\n\nQuyidagilardan birini tanlang:",
+  "buy_btn_catalog": "🗂 Katalogni ko'rish",
+  "buy_btn_search": "🔎 Mahsulot qidirish",
+  "buy_btn_cart": "🛒 Mening savatim",
+  "buy_btn_map": "📍 Xaritada ko'rish",
+
+  "service_intro": "🔧 *Service / Xizmat ko'rsatish*\n\nKomputer, noutbuk, printer va boshqa qurilmalarni ta'mirlash xizmati. Mijoz turini tanlang:",
+  "service_btn_individual": "👤 Jismoniy shaxs",
+  "service_btn_legal": "🏢 Yuridik shaxs",
+
+  "svc_ind_intro": "👤 *Jismoniy shaxs*\n\nIltimos, ma'lumotlaringizni ketma-ket yuboring. Avval — to'liq ismingiz:",
+  "svc_legal_intro": "🏢 *Yuridik shaxs*\n\nAvval kompaniyangizning *STIR (INN)* raqamini yuboring. Biz uni orginfo.uz dan tekshiramiz:",
+  "svc_ask_inn": "🔢 STIR (INN) raqamingizni yuboring (9 raqam):",
+  "svc_inn_invalid": "❗ STIR noto'g'ri formatda. Iltimos, 9 raqamli STIR yuboring.",
+  "svc_inn_searching": "🔍 orginfo.uz dan qidirayapman, biroz kuting...",
+  "svc_inn_not_found": "❗ orginfo.uz da topilmadi. STIR ni qaytadan tekshiring yoki to'g'ridan-to'g'ri operator bilan bog'laning.",
+  "svc_inn_confirm": "✅ Topildi:\n\n🏢 *{name}*\n🔢 STIR: `{inn}`\n👨‍💼 Rahbar: {director}\n📍 {address}\n📱 {phone}\n📧 {email}\n\nBu sizning kompaniyangizmi?",
+  "svc_btn_confirm": "✅ Ha, mening kompaniyam",
+  "svc_btn_reject": "❌ Yo'q, qaytadan",
+
+  "svc_ask_contact_name": "👤 Aloqa shaxsining to'liq ismini yuboring:",
+  "svc_ask_phone": "📱 Telefon raqamingizni yuboring:",
+  "svc_send_contact": "📱 Telefon raqamni yuborish",
+  "svc_invalid_phone": "❗ Telefon raqam to'g'ri emas. +998 bilan boshlab yozing yoki tugmadan foydalaning.",
+  "svc_ask_device": "💻 Qaysi qurilma uchun xizmat kerak?",
+  "svc_btn_pc": "🖥 Kompyuter",
+  "svc_btn_laptop": "💼 Noutbuk",
+  "svc_btn_printer": "🖨 Printer / skaner",
+  "svc_btn_monitor": "📺 Monitor",
+  "svc_btn_other": "📦 Boshqa",
+  "svc_ask_model": "🏷 Qurilma modelini yozing (masalan: HP LaserJet M111a). Bilmasangiz «-» yuboring:",
+  "svc_ask_problem": "📝 Muammoni batafsil yozing (qanday nosozlik, qachondan beri):",
+  "svc_confirm": "✅ Tasdiqlaysizmi?\n\n👤 *Ism:* {name}\n📱 *Telefon:* {phone}\n💻 *Qurilma:* {device}\n🏷 *Model:* {model}\n📝 *Muammo:* {problem}",
+  "svc_btn_confirm_send": "✅ Yuborish",
+  "svc_btn_cancel": "❌ Bekor qilish",
+  "svc_done": "✅ So'rovingiz qabul qilindi! So'rov raqami: *#{id}*\n\nMutaxasislarimiz tez orada siz bilan bog'lanadi. 🙏",
+  "svc_cancelled": "Xizmat so'rovi bekor qilindi.",
 
   "browse_pick_group": "📂 *Bo'limni tanlang:*",
   "browse_pick_section": "📂 *{group}* — bo'limchani tanlang:",
@@ -44,15 +86,31 @@
   "order_confirm_yes": "✅ Tasdiqlash",
   "order_confirm_no": "❌ Bekor qilish",
   "order_cancelled": "Zakaz bekor qilindi.",
-  "order_done": "✅ Zakazingiz qabul qilindi! Operator tez orada siz bilan bogʻlanadi.\n\nRahmat! 🙏",
+  "order_done": "✅ Zakazingiz qabul qilindi! Buyurtma raqami: *#{id}*\n\nOperator tez orada siz bilan bogʻlanadi. Rahmat! 🙏",
   "order_error": "Texnik xato yuz berdi. Iltimos, keyinroq urinib koʻring.",
 
   "contact_info": "📞 *Age Computers*\n\n📱 Telefon: [+998 88-331-11-33](tel:+998883311133)\n📍 Manzil: [Farogat street, Toshkent](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Ish vaqti: 9:00 — 18:30",
 
   "about": "*Age Computers Bot*\n\nKomputer, noutbuk, printer va aksessuarlar do'koni.\nMahsulotlarni tanlang, savatga qoʻshing va zakaz bering.",
-  "help": "Buyruqlar:\n/start — boshlash\n/help — yordam\n/about — bot haqida\n/myid — sizning chat ID\n\nMenu tugmalaridan foydalaning.\n\n*Admin uchun:*\n/orders — soʻnggi 10 zakaz\n/today — bugungi zakazlar\n/stats — statistika\n/order <id> — bitta zakazni koʻrish",
+  "help": "Buyruqlar:\n/start — boshlash\n/help — yordam\n/about — bot haqida\n/myid — sizning chat ID",
 
   "error_generic": "Texnik xato. Qaytadan urinib koʻring.",
   "back": "⬅ Orqaga",
-  "main_menu": "🏠 Asosiy menyu"
+  "main_menu": "🏠 Asosiy menyu",
+
+  "notify_order_status": "📦 Buyurtma *#{number}* — status yangilandi:\n*{status}*",
+  "notify_service_status": "🔧 Xizmat so'rovi *#{number}* — status yangilandi:\n*{status}*",
+  "status_order_new": "🆕 Yangi",
+  "status_order_accepted": "✅ Qabul qilindi",
+  "status_order_preparing": "📦 Tayyorlanmoqda",
+  "status_order_ready": "✔️ Tayyor — do'kondan oling",
+  "status_order_delivered": "📤 Berildi",
+  "status_order_cancelled": "❌ Bekor qilindi",
+  "status_service_new": "🆕 Yangi",
+  "status_service_accepted": "✅ Qabul qilindi",
+  "status_service_in_progress": "🔧 Ta'mirda",
+  "status_service_waiting_parts": "⏳ Ehtiyot qism kutilmoqda",
+  "status_service_ready": "✔️ Tayyor — olib keting",
+  "status_service_delivered": "📤 Berildi",
+  "status_service_cancelled": "❌ Bekor qilindi"
 }

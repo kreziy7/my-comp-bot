@@ -3,12 +3,13 @@ const cfg = require('./config');
 const catalog = require('./catalog/catalog');
 const cart = require('./cart');
 const { t, productCard, renderCart, escapeMd } = require('./utils/format');
-const { mainMenu } = require('./keyboards/main');
+const { mainMenu, buyMenuKb, serviceMenuKb } = require('./keyboards/main');
 const {
   topGroupsKb, sectionsKb, productListKb, productCardKb, cartKb,
 } = require('./keyboards/inline');
 const { searchScene } = require('./scenes/search');
 const { orderScene, renderOrderForAdmin, formatMoney } = require('./scenes/order');
+const { serviceScene } = require('./scenes/service');
 const orders = require('./orders');
 
 function isAdmin(ctx) {
@@ -17,7 +18,7 @@ function isAdmin(ctx) {
 
 const bot = new Telegraf(cfg.botToken);
 
-const stage = new Scenes.Stage([searchScene, orderScene]);
+const stage = new Scenes.Stage([searchScene, orderScene, serviceScene]);
 bot.use(session());
 bot.use(stage.middleware());
 
@@ -31,20 +32,46 @@ bot.command('myid', async (ctx) => {
   await ctx.reply(`Sizning chat_id: \`${ctx.chat.id}\`\nUser id: \`${ctx.from.id}\``, { parse_mode: 'Markdown' });
 });
 
-bot.hears(t('menu_browse'), async (ctx) => {
-  const groups = catalog.getTopGroups();
-  await ctx.reply(t('browse_pick_group'), { parse_mode: 'Markdown', ...topGroupsKb(groups) });
+// New top-level menu
+bot.hears(t('menu_buy'), async (ctx) => {
+  await ctx.reply(t('buy_intro'), { parse_mode: 'Markdown', ...buyMenuKb() });
 });
 
-bot.hears(t('menu_search'), async (ctx) => ctx.scene.enter('search'));
-
-bot.hears(t('menu_cart'), async (ctx) => {
-  const items = cart.getCart(ctx.from.id);
-  await sendCart(ctx, items);
+bot.hears(t('menu_service'), async (ctx) => {
+  await ctx.reply(t('service_intro'), { parse_mode: 'Markdown', ...serviceMenuKb() });
 });
 
 bot.hears(t('menu_contact'), async (ctx) => {
   await ctx.reply(t('contact_info'), { parse_mode: 'Markdown' });
+});
+
+// Buy sub-menu actions
+bot.action('buy:catalog', async (ctx) => {
+  const groups = catalog.getTopGroups();
+  await ctx.answerCbQuery();
+  await ctx.reply(t('browse_pick_group'), { parse_mode: 'Markdown', ...topGroupsKb(groups) });
+});
+
+bot.action('buy:search', async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.scene.enter('search');
+});
+
+bot.action('buy:cart', async (ctx) => {
+  await ctx.answerCbQuery();
+  const items = cart.getCart(ctx.from.id);
+  await sendCart(ctx, items);
+});
+
+// Service scene entry points
+bot.action('service:start:individual', async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.scene.enter('service', { kind: 'individual' });
+});
+
+bot.action('service:start:legal', async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.scene.enter('service', { kind: 'legal' });
 });
 
 async function sendCart(ctx, items) {

@@ -6,6 +6,7 @@ const cart = require('../cart');
 const catalog = require('../catalog/catalog');
 const cfg = require('../config');
 const orders = require('../orders');
+const db = require('../db');
 
 const PHONE_RE = /^\+?\d[\d\s\-()]{8,18}\d$/;
 
@@ -188,6 +189,36 @@ async function submitOrder(ctx) {
   };
   orders.appendOrder(order);
 
+  // Supabase ga ham yozish (admin panel uchun)
+  if (db.isEnabled()) {
+    try {
+      const customerId = await db.upsertCustomer(ctx.from, {
+        full_name: data.name,
+        phone: data.phone,
+        customer_type: 'individual',
+      });
+      const dbItems = orderItems.map((it) => ({
+        productId: it.pid,
+        name: it.description,
+        code: it.modelCode,
+        qty: it.qty,
+        priceUsd: it.priceUsd,
+        lineTotal: it.subtotal,
+      }));
+      const created = await db.createOrder({
+        customerId,
+        items: dbItems,
+        totalUsd: total,
+        comment: data.note || null,
+        locationLat: data.location?.lat ?? null,
+        locationLng: data.location?.lng ?? null,
+      });
+      order.dbNumber = created.order_number;
+    } catch (e) {
+      console.error('[order] supabase save failed:', e.message);
+    }
+  }
+
   const adminMsg = renderOrderForAdmin(order);
   if (cfg.adminChatId) {
     try {
@@ -204,7 +235,10 @@ async function submitOrder(ctx) {
   }
 
   cart.clearCart(ctx.from.id);
-  await ctx.reply(t('order_done'), mainMenu());
+  await ctx.reply(t('order_done', { id: order.dbNumber || orderId }), {
+    parse_mode: 'Markdown',
+    ...mainMenu(),
+  });
 }
 
 module.exports = { orderScene, submitOrder, renderOrderForAdmin, formatMoney };

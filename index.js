@@ -2,8 +2,10 @@ const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
 const http = require('http');
+require('dotenv').config();
 const bot = require('./src/bot');
 const catalog = require('./src/catalog/catalog');
+const { startStatusNotifier } = require('./src/notifier');
 
 catalog.buildCache();
 
@@ -12,6 +14,9 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL || '';
 const WEBHOOK_PATH = `/tg/${process.env.BOT_TOKEN}`;
 
 async function start() {
+  // Realtime: admin paneldan status o'zgarganda klientga xabar yuboradi
+  startStatusNotifier(bot.telegram);
+
   if (WEBHOOK_URL) {
     const webhookCallback = await bot.createWebhook({ domain: WEBHOOK_URL, path: WEBHOOK_PATH });
     const server = http.createServer((req, res) => {
