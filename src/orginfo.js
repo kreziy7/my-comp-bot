@@ -11,9 +11,12 @@ async function fetchHtml(url) {
   return await r.text();
 }
 
-function firstOrgLink(html) {
-  const m = html.match(/href="\/ru\/organization\/([a-f0-9]+)\/?"/);
-  return m ? m[1] : null;
+function orgLinks(html) {
+  const seen = new Set();
+  const re = /href="\/ru\/organization\/([a-f0-9]+)\/?"/g;
+  let m;
+  while ((m = re.exec(html))) seen.add(m[1]);
+  return [...seen];
 }
 
 function extractOrgJsonLd(html) {
@@ -30,25 +33,12 @@ function extractOrgJsonLd(html) {
   return null;
 }
 
-async function fetchOrgByInn(inn) {
-  const searchUrl = `https://orginfo.uz/ru/search/organizations/?q=${encodeURIComponent(inn)}`;
-  const searchHtml = await fetchHtml(searchUrl);
-  const orgId = firstOrgLink(searchHtml);
-  if (!orgId) return null;
-
-  const orgUrl = `https://orginfo.uz/ru/organization/${orgId}/`;
-  const orgHtml = await fetchHtml(orgUrl);
-  const ld = extractOrgJsonLd(orgHtml);
-  if (!ld) return null;
-
-  const taxID = String(ld.taxID ?? ld.identifier ?? '').trim();
-  if (taxID && taxID !== inn) return null;
-
+function buildResult(ld, orgId, orgUrl, fallbackInn) {
+  const taxID = String(ld.taxID ?? ld.identifier ?? '').replace(/\D/g, '');
   const addr = ld.address || {};
   const employee = ld.employee || {};
-
   return {
-    inn: taxID || inn,
+    inn: taxID || fallbackInn,
     name: ld.name || '',
     legalName: ld.legalName || ld.name || '',
     email: ld.email || null,
@@ -59,7 +49,39 @@ async function fetchOrgByInn(inn) {
     directorName: employee.name || null,
     orginfoId: orgId,
     orginfoUrl: orgUrl,
+    _taxID: taxID,
   };
+}
+
+async function fetchOrgByInn(inn) {
+  const searchUrl = `https://orginfo.uz/ru/search/organizations/?q=${encodeURIComponent(inn)}`;
+  const searchHtml = await fetchHtml(searchUrl);
+  const ids = orgLinks(searchHtml).slice(0, 5);
+  if (!ids.length) return null;
+
+  let firstParsed = null;
+  for (const orgId of ids) {
+    const orgUrl = `https://orginfo.uz/ru/organization/${orgId}/`;
+    let orgHtml;
+    try { orgHtml = await fetchHtml(orgUrl); } catch { continue; }
+    const ld = extractOrgJsonLd(orgHtml);
+    if (!ld) continue;
+    const result = buildResult(ld, orgId, orgUrl, inn);
+    if (result._taxID === inn) {
+      delete result._taxID;
+      return result;
+    }
+    if (!firstParsed) firstParsed = result;
+  }
+
+  // No exact match, but search did surface candidates and the first one
+  // had no taxID in JSON-LD — accept it as best-effort (orginfo sometimes
+  // omits taxID for partner companies).
+  if (firstParsed && !firstParsed._taxID) {
+    delete firstParsed._taxID;
+    return firstParsed;
+  }
+  return null;
 }
 
 module.exports = { fetchOrgByInn };

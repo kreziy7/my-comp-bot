@@ -11,6 +11,10 @@ const cfg = require('../config');
 const PHONE_RE = /^\+?\d[\d\s\-()]{8,18}\d$/;
 const INN_RE = /^\d{9}$/;
 
+function normalizeInn(raw) {
+  return String(raw || '').replace(/\D/g, '');
+}
+
 const serviceScene = new Scenes.WizardScene(
   'service',
   // Step 0 — initialized via ctx.scene.enter('service', { kind: 'individual' | 'legal' })
@@ -37,7 +41,7 @@ const serviceScene = new Scenes.WizardScene(
   // Step 1 — INN entry (legal only)
   async (ctx) => {
     if (!ctx.message?.text) return;
-    const inn = ctx.message.text.trim();
+    const inn = normalizeInn(ctx.message.text);
     if (!INN_RE.test(inn)) {
       await ctx.reply(t('svc_inn_invalid'));
       return;
@@ -51,7 +55,10 @@ const serviceScene = new Scenes.WizardScene(
       org = null;
     }
     if (!org) {
-      await ctx.reply(t('svc_inn_not_found'));
+      await ctx.reply(t('svc_inn_not_found'), Markup.inlineKeyboard([
+        [Markup.button.callback(t('svc_btn_manual_inn'), 'svc:inn:manual')],
+      ]));
+      ctx.wizard.state.data.inn = inn; // remember entered INN for manual path
       return; // stay on same step
     }
     ctx.wizard.state.data.inn = inn;
@@ -115,40 +122,23 @@ const serviceScene = new Scenes.WizardScene(
     await ctx.reply(t('svc_ask_device'),
       Markup.keyboard([
         [t('svc_btn_pc'), t('svc_btn_laptop')],
-        [t('svc_btn_printer'), t('svc_btn_monitor')],
-        [t('svc_btn_other')],
+        [t('svc_btn_printer'), t('svc_btn_cartridge')],
+        [t('svc_btn_monitor'), t('svc_btn_other')],
       ]).oneTime().resize());
     return ctx.wizard.next();
   },
 
-  // Step 5 — device type
+  // Step 5 — device type → straight to summary
   async (ctx) => {
     if (!ctx.message?.text) return;
     ctx.wizard.state.data.device_type = ctx.message.text.trim().replace(/^[^\p{L}\p{N}]+/u, '').slice(0, 60);
-    await ctx.reply(t('svc_ask_model'), { reply_markup: { remove_keyboard: true } });
-    return ctx.wizard.next();
-  },
-
-  // Step 6 — device model
-  async (ctx) => {
-    if (!ctx.message?.text) return;
-    const m = ctx.message.text.trim();
-    ctx.wizard.state.data.device_model = m === '-' ? null : m.slice(0, 100);
-    await ctx.reply(t('svc_ask_problem'));
-    return ctx.wizard.next();
-  },
-
-  // Step 7 — problem description
-  async (ctx) => {
-    if (!ctx.message?.text) return;
-    ctx.wizard.state.data.problem = ctx.message.text.trim().slice(0, 1000);
+    ctx.wizard.state.data.device_model = null;
+    ctx.wizard.state.data.problem = null;
     const d = ctx.wizard.state.data;
     const summary = t('svc_confirm', {
       name: d.full_name,
       phone: d.phone,
       device: d.device_type,
-      model: d.device_model || '—',
-      problem: d.problem,
     });
     await ctx.reply(summary, {
       parse_mode: 'Markdown',
@@ -160,9 +150,34 @@ const serviceScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
 
-  // Step 8 — wait for final confirmation (handled by action)
+  // Step 6 — wait for final confirmation (handled by action)
   async (ctx) => {
     await ctx.reply(t('svc_confirm', ctx.wizard.state.data ?? {}));
+  },
+
+  // Step 7 — manual legalName entry (when orginfo lookup failed)
+  async (ctx) => {
+    if (!ctx.message?.text) return;
+    const legalName = ctx.message.text.trim().slice(0, 150);
+    if (legalName.length < 2) {
+      await ctx.reply(t('svc_ask_legal_name_manual'));
+      return;
+    }
+    ctx.wizard.state.data.org = {
+      inn: ctx.wizard.state.data.inn || null,
+      name: legalName,
+      legalName,
+      email: null,
+      telephone: null,
+      address: null,
+      locality: null,
+      foundingDate: null,
+      directorName: null,
+      orginfoId: null,
+      orginfoUrl: null,
+    };
+    await ctx.reply(t('svc_ask_contact_name'));
+    return ctx.wizard.selectStep(3);
   }
 );
 
@@ -179,6 +194,13 @@ serviceScene.action('svc:org:yes', async (ctx) => {
   await ctx.answerCbQuery();
   await ctx.reply(t('svc_ask_contact_name'), { reply_markup: { remove_keyboard: true } });
   return ctx.wizard.selectStep(3);
+});
+
+// Manual fallback when orginfo lookup fails — ask user to type company name.
+serviceScene.action('svc:inn:manual', async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.reply(t('svc_ask_legal_name_manual'), { reply_markup: { remove_keyboard: true } });
+  return ctx.wizard.selectStep(7); // dedicated manual-name step
 });
 
 serviceScene.action('svc:final:no', async (ctx) => {
@@ -233,8 +255,6 @@ serviceScene.action('svc:final:yes', async (ctx) => {
         `👤 *Ism:* ${d.full_name}`,
         `📱 *Telefon:* ${d.phone}`,
         `💻 *Qurilma:* ${d.device_type}`,
-        `🏷 *Model:* ${d.device_model || '—'}`,
-        `📝 *Muammo:* ${d.problem}`,
       ].filter(Boolean).join('\n');
       try {
         await ctx.telegram.sendMessage(cfg.adminChatId, lines, { parse_mode: 'Markdown' });
