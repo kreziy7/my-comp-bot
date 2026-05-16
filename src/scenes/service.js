@@ -283,8 +283,8 @@ serviceScene.action('svc:final:yes', async (ctx) => {
       const req = await db.createServiceRequest({
         customerId,
         deviceType: d.device_type,
-        deviceModel: d.device_model,
-        problemDescription: d.problem,
+        deviceModel: d.device_model || '—',
+        problemDescription: d.problem || '—',
       });
       ctx.wizard.state.data.requestNumber = req.request_number;
     }

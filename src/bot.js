@@ -75,7 +75,7 @@ bot.hears(tAll('menu_service'), async (ctx) => {
 });
 
 bot.hears(tAll('menu_contact'), async (ctx) => {
-  await ctx.reply(ctx.ctx.t('contact_info'), { parse_mode: 'Markdown' });
+  await ctx.reply(ctx.t('contact_info'), { parse_mode: 'Markdown' });
 });
 
 // Buy sub-menu actions
