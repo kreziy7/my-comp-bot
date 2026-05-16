@@ -70,11 +70,14 @@ const serviceScene = new Scenes.WizardScene(
       org = null;
     }
     if (!org) {
-      await ctx.reply(ctx.t('svc_inn_not_found'), Markup.inlineKeyboard([
-        [Markup.button.callback(ctx.t('svc_btn_manual_inn'), 'svc:inn:manual')],
-      ]));
-      ctx.wizard.state.data.inn = inn; // remember entered INN for manual path
-      return; // stay on same step
+      // orginfo coverage is incomplete (esp. recently-registered companies).
+      // Don't dead-end the user — keep the INN they typed and prompt for the
+      // company name directly. No extra confirmation tap needed.
+      ctx.wizard.state.data.inn = inn;
+      await ctx.reply(ctx.t('svc_inn_not_found'));
+      await ctx.reply(ctx.t('svc_ask_legal_name_manual'),
+        Markup.keyboard([[ctx.t('back')]]).oneTime().resize());
+      return ctx.wizard.selectStep(7);
     }
     ctx.wizard.state.data.inn = inn;
     ctx.wizard.state.data.org = org;

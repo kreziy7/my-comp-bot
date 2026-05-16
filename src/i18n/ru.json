@@ -1,5 +1,5 @@
 {
-  "start_welcome": "Здравствуйте! Добро пожаловать в бот *Age Computers*! 👋\n\nВыберите пункт меню:",
+  "start_welcome": "Здравствуйте! Добро пожаловать в бот *My-Comp*! 👋\n\nВыберите пункт меню:",
 
   "menu_buy": "🛒 Покупка",
   "menu_service": "🔧 Сервис",
@@ -26,7 +26,7 @@
   "svc_inn_searching": "🔍 Ищу на orginfo.uz, немного подождите...",
   "svc_inn_not_found": "❗ На orginfo.uz не найдено точного совпадения по этому ИНН. Проверьте ИНН или введите название компании вручную.",
   "svc_btn_manual_inn": "✍️ Ввести название компании вручную",
-  "svc_ask_legal_name_manual": "🏢 Отправьте полное название вашей компании (например: ООО «AGE COMPUTERS»):",
+  "svc_ask_legal_name_manual": "🏢 Отправьте полное название вашей компании (например: ООО «MY-COMP»):",
   "svc_inn_confirm": "✅ Найдено:\n\n🏢 *{name}*\n🔢 ИНН: `{inn}`\n👨‍💼 Руководитель: {director}\n📍 {address}\n📱 {phone}\n📧 {email}\n\nЭто ваша компания?",
   "svc_btn_confirm": "✅ Да, моя компания",
   "svc_btn_reject": "❌ Нет, заново",
@@ -90,9 +90,9 @@
   "order_done": "✅ Ваш заказ принят! Номер заказа: *#{id}*\n\nОператор свяжется с вами в ближайшее время. Спасибо! 🙏",
   "order_error": "Произошла техническая ошибка. Пожалуйста, попробуйте позже.",
 
-  "contact_info": "📞 *Age Computers*\n\n📱 Телефон: [+998 88-331-11-33](tel:+998883311133)\n📍 Адрес: [Farogat street, Ташкент](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Часы работы: 9:00 — 18:30",
+  "contact_info": "📞 *My-Comp*\n\n📱 Телефон: [+998 88-331-11-33](tel:+998883311133)\n📍 Адрес: [Farogat street, Ташкент](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Часы работы: 9:00 — 18:30",
 
-  "about": "*Age Computers Bot*\n\nМагазин компьютеров, ноутбуков, принтеров и аксессуаров.\nВыберите товары, добавьте в корзину и оформите заказ.",
+  "about": "*My-Comp Bot*\n\nМагазин компьютеров, ноутбуков, принтеров и аксессуаров.\nВыберите товары, добавьте в корзину и оформите заказ.",
   "help": "Команды:\n/start — начать\n/help — помощь\n/about — о боте\n/lang — сменить язык\n/myid — ваш chat ID",
 
   "error_generic": "Техническая ошибка. Попробуйте ещё раз.",

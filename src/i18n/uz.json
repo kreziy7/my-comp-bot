@@ -1,5 +1,5 @@
 {
-  "start_welcome": "Assalomu alaykum, *Age Computers* botiga xush kelibsiz! 👋\n\nQuyidagi menyudan tanlang:",
+  "start_welcome": "Assalomu alaykum, *My-Comp* botiga xush kelibsiz! 👋\n\nQuyidagi menyudan tanlang:",
 
   "menu_buy": "🛒 Xarid qilish",
   "menu_service": "🔧 Service",
@@ -26,7 +26,7 @@
   "svc_inn_searching": "🔍 orginfo.uz dan qidirayapman, biroz kuting...",
   "svc_inn_not_found": "❗ orginfo.uz da bu STIR bo'yicha aniq mos kompaniya topilmadi. STIR ni qaytadan tekshiring yoki kompaniya nomini qo'lda kiriting.",
   "svc_btn_manual_inn": "✍️ Kompaniya nomini qo'lda kiritish",
-  "svc_ask_legal_name_manual": "🏢 Kompaniyangizning to'liq nomini yuboring (masalan: \"AGE COMPUTERS\" MChJ):",
+  "svc_ask_legal_name_manual": "🏢 Kompaniyangizning to'liq nomini yuboring (masalan: \"MY-COMP\" MChJ):",
   "svc_inn_confirm": "✅ Topildi:\n\n🏢 *{name}*\n🔢 STIR: `{inn}`\n👨‍💼 Rahbar: {director}\n📍 {address}\n📱 {phone}\n📧 {email}\n\nBu sizning kompaniyangizmi?",
   "svc_btn_confirm": "✅ Ha, mening kompaniyam",
   "svc_btn_reject": "❌ Yo'q, qaytadan",
@@ -90,9 +90,9 @@
   "order_done": "✅ Zakazingiz qabul qilindi! Buyurtma raqami: *#{id}*\n\nOperator tez orada siz bilan bogʻlanadi. Rahmat! 🙏",
   "order_error": "Texnik xato yuz berdi. Iltimos, keyinroq urinib koʻring.",
 
-  "contact_info": "📞 *Age Computers*\n\n📱 Telefon: [+998 88-331-11-33](tel:+998883311133)\n📍 Manzil: [Farogat street, Toshkent](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Ish vaqti: 9:00 — 18:30",
+  "contact_info": "📞 *My-Comp*\n\n📱 Telefon: [+998 88-331-11-33](tel:+998883311133)\n📍 Manzil: [Farogat street, Toshkent](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Ish vaqti: 9:00 — 18:30",
 
-  "about": "*Age Computers Bot*\n\nKomputer, noutbuk, printer va aksessuarlar do'koni.\nMahsulotlarni tanlang, savatga qoʻshing va zakaz bering.",
+  "about": "*My-Comp Bot*\n\nKomputer, noutbuk, printer va aksessuarlar do'koni.\nMahsulotlarni tanlang, savatga qoʻshing va zakaz bering.",
   "help": "Buyruqlar:\n/start — boshlash\n/help — yordam\n/about — bot haqida\n/lang — tilni o'zgartirish\n/myid — sizning chat ID",
 
   "error_generic": "Texnik xato. Qaytadan urinib koʻring.",
