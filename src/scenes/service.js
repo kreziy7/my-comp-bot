@@ -15,6 +15,12 @@ function normalizeInn(raw) {
   return String(raw || '').replace(/\D/g, '');
 }
 
+// Strip Markdown-special chars so values from external sources (orginfo.uz)
+// can be safely interpolated into messages using parse_mode: 'Markdown'.
+function md(s) {
+  return String(s ?? '').replace(/[`*_\[\]]/g, '').trim();
+}
+
 const serviceScene = new Scenes.WizardScene(
   'service',
   // Step 0 — initialized via ctx.scene.enter('service', { kind: 'individual' | 'legal' })
@@ -64,12 +70,12 @@ const serviceScene = new Scenes.WizardScene(
     ctx.wizard.state.data.inn = inn;
     ctx.wizard.state.data.org = org;
     const text = t('svc_inn_confirm', {
-      name: org.legalName || org.name,
-      inn: org.inn,
-      director: org.directorName || '—',
-      address: [org.locality, org.address].filter(Boolean).join(', ') || '—',
-      phone: org.telephone || '—',
-      email: org.email || '—',
+      name: md(org.legalName || org.name),
+      inn: md(org.inn),
+      director: md(org.directorName) || '—',
+      address: md([org.locality, org.address].filter(Boolean).join(', ')) || '—',
+      phone: md(org.telephone) || '—',
+      email: md(org.email) || '—',
     });
     await ctx.reply(text, {
       parse_mode: 'Markdown',
@@ -85,9 +91,9 @@ const serviceScene = new Scenes.WizardScene(
   async (ctx) => {
     // Fallback if user sends text instead of clicking button
     await ctx.reply(t('svc_inn_confirm', {
-      name: ctx.wizard.state.data.org?.legalName ?? '—',
-      inn: ctx.wizard.state.data.org?.inn ?? '—',
-      director: ctx.wizard.state.data.org?.directorName ?? '—',
+      name: md(ctx.wizard.state.data.org?.legalName) || '—',
+      inn: md(ctx.wizard.state.data.org?.inn) || '—',
+      director: md(ctx.wizard.state.data.org?.directorName) || '—',
       address: '—',
       phone: '—',
       email: '—',
@@ -136,9 +142,9 @@ const serviceScene = new Scenes.WizardScene(
     ctx.wizard.state.data.problem = null;
     const d = ctx.wizard.state.data;
     const summary = t('svc_confirm', {
-      name: d.full_name,
-      phone: d.phone,
-      device: d.device_type,
+      name: md(d.full_name),
+      phone: md(d.phone),
+      device: md(d.device_type),
     });
     await ctx.reply(summary, {
       parse_mode: 'Markdown',
@@ -249,12 +255,12 @@ serviceScene.action('svc:final:yes', async (ctx) => {
         `🔧 *Yangi service so'rovi #${num}*`,
         '',
         d.kind === 'legal' ? `🏢 *Yuridik shaxs*` : `👤 *Jismoniy shaxs*`,
-        d.org ? `🏢 ${d.org.legalName}` : '',
-        d.org ? `🔢 STIR: \`${d.org.inn}\`` : '',
+        d.org ? `🏢 ${md(d.org.legalName)}` : '',
+        d.org ? `🔢 STIR: \`${md(d.org.inn)}\`` : '',
         '',
-        `👤 *Ism:* ${d.full_name}`,
-        `📱 *Telefon:* ${d.phone}`,
-        `💻 *Qurilma:* ${d.device_type}`,
+        `👤 *Ism:* ${md(d.full_name)}`,
+        `📱 *Telefon:* ${md(d.phone)}`,
+        `💻 *Qurilma:* ${md(d.device_type)}`,
       ].filter(Boolean).join('\n');
       try {
         await ctx.telegram.sendMessage(cfg.adminChatId, lines, { parse_mode: 'Markdown' });
