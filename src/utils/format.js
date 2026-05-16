@@ -1,12 +1,31 @@
 const uz = require('../i18n/uz.json');
+const ru = require('../i18n/ru.json');
+const dicts = { uz, ru };
+const SUPPORTED = ['uz', 'ru'];
+const DEFAULT_LANG = 'uz';
 
-function t(key, vars = {}) {
-  let s = uz[key];
+function t(lang, key, vars) {
+  // Back-compat: legacy `t(key, vars)` calls default to UZ.
+  if (typeof lang === 'string' && !SUPPORTED.includes(lang)) {
+    vars = key;
+    key = lang;
+    lang = DEFAULT_LANG;
+  }
+  vars = vars || {};
+  const dict = dicts[lang] || dicts[DEFAULT_LANG];
+  let s = dict[key];
+  if (s == null) s = dicts[DEFAULT_LANG][key];
   if (s == null) return key;
   for (const [k, v] of Object.entries(vars)) {
     s = s.split(`{${k}}`).join(String(v));
   }
   return s;
+}
+
+// Returns the localized string in every supported language — used by
+// bot.hears() so a listener fires on the button label in any language.
+function tAll(key, vars) {
+  return SUPPORTED.map(l => t(l, key, vars));
 }
 
 function escapeMd(s) {
@@ -81,4 +100,4 @@ function renderCart(cart, catalog) {
   return { text: lines.join('\n'), total };
 }
 
-module.exports = { t, escapeMd, formatPrice, productCard, productListItem, cartLine, cartTotal, renderCart };
+module.exports = { t, tAll, SUPPORTED, DEFAULT_LANG, escapeMd, formatPrice, productCard, productListItem, cartLine, cartTotal, renderCart };

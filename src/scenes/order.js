@@ -15,21 +15,21 @@ const orderScene = new Scenes.WizardScene(
   async (ctx) => {
     const items = cart.getCart(ctx.from.id);
     if (!items || items.size === 0) {
-      await ctx.reply(t('cart_empty'), mainMenu());
+      await ctx.reply(ctx.t('cart_empty'), mainMenu(ctx.lang));
       return ctx.scene.leave();
     }
-    await ctx.reply(t('order_ask_name'), { reply_markup: { remove_keyboard: true } });
+    await ctx.reply(ctx.t('order_ask_name'), { reply_markup: { remove_keyboard: true } });
     ctx.wizard.state.data = {};
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!ctx.message || !ctx.message.text) {
-      await ctx.reply(t('order_ask_name'));
+      await ctx.reply(ctx.t('order_ask_name'));
       return;
     }
     ctx.wizard.state.data.name = ctx.message.text.trim().slice(0, 100);
-    await ctx.reply(t('order_ask_phone'),
-      Markup.keyboard([[Markup.button.contactRequest(t('order_send_contact'))]]).oneTime().resize(),
+    await ctx.reply(ctx.t('order_ask_phone'),
+      Markup.keyboard([[Markup.button.contactRequest(ctx.t('order_send_contact'))]]).oneTime().resize(),
     );
     return ctx.wizard.next();
   },
@@ -42,14 +42,14 @@ const orderScene = new Scenes.WizardScene(
       if (PHONE_RE.test(txt)) phone = txt;
     }
     if (!phone) {
-      await ctx.reply(t('order_invalid_phone'));
+      await ctx.reply(ctx.t('order_invalid_phone'));
       return;
     }
     ctx.wizard.state.data.phone = phone;
-    await ctx.reply(t('order_ask_note'),
+    await ctx.reply(ctx.t('order_ask_note'),
       Markup.keyboard([
-        [Markup.button.locationRequest(t('order_send_location'))],
-        [t('order_skip_note')],
+        [Markup.button.locationRequest(ctx.t('order_send_location'))],
+        [ctx.t('order_skip_note')],
       ]).oneTime().resize(),
     );
     return ctx.wizard.next();
@@ -63,13 +63,13 @@ const orderScene = new Scenes.WizardScene(
       note = `📍 Geolokatsiya: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
     } else if (ctx.message && ctx.message.text) {
       const txt = ctx.message.text.trim();
-      if (txt === '-' || txt === t('order_skip_note')) {
+      if (txt === '-' || txt === ctx.t('order_skip_note')) {
         note = '';
       } else {
         note = txt.slice(0, 500);
       }
     } else {
-      await ctx.reply(t('order_ask_note'));
+      await ctx.reply(ctx.t('order_ask_note'));
       return;
     }
     ctx.wizard.state.data.note = note;
@@ -77,7 +77,7 @@ const orderScene = new Scenes.WizardScene(
 
     const { text, total } = renderCart(cart.getCart(ctx.from.id), catalog);
     ctx.wizard.state.data.total = total;
-    const summary = t('order_confirm', {
+    const summary = ctx.t('order_confirm', {
       name: ctx.wizard.state.data.name,
       phone: ctx.wizard.state.data.phone,
       note: note || '—',
@@ -87,12 +87,12 @@ const orderScene = new Scenes.WizardScene(
       parse_mode: 'Markdown',
       reply_markup: { remove_keyboard: true },
     });
-    await ctx.reply('Tasdiqlaysizmi?', orderConfirmKb());
+    await ctx.reply('Tasdiqlaysizmi?', orderConfirmKb(ctx.lang));
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (ctx.message && ctx.message.text) {
-      await ctx.reply('Iltimos, tugmalardan birini bosing.', orderConfirmKb());
+      await ctx.reply('Iltimos, tugmalardan birini bosing.', orderConfirmKb(ctx.lang));
     }
   },
 );
@@ -106,7 +106,7 @@ orderScene.action('order:yes', async (ctx) => {
     await submitOrder(ctx);
   } catch (e) {
     console.error('[order] submit error:', e);
-    await ctx.reply(t('order_error'), mainMenu());
+    await ctx.reply(ctx.t('order_error'), mainMenu(ctx.lang));
   }
   return ctx.scene.leave();
 });
@@ -116,7 +116,7 @@ orderScene.action('order:no', async (ctx) => {
   try {
     await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
   } catch (_) {}
-  await ctx.reply(t('order_cancelled'), mainMenu());
+  await ctx.reply(ctx.t('order_cancelled'), mainMenu(ctx.lang));
   return ctx.scene.leave();
 });
 
@@ -154,7 +154,7 @@ async function submitOrder(ctx) {
   const data = ctx.wizard.state.data || {};
   const items = cart.getCart(ctx.from.id);
   if (!items || items.size === 0) {
-    await ctx.reply(t('cart_empty'), mainMenu());
+    await ctx.reply(ctx.t('cart_empty'), mainMenu(ctx.lang));
     return;
   }
   const orderId = orders.nextId();
@@ -235,9 +235,9 @@ async function submitOrder(ctx) {
   }
 
   cart.clearCart(ctx.from.id);
-  await ctx.reply(t('order_done', { id: order.dbNumber || orderId }), {
+  await ctx.reply(ctx.t('order_done', { id: order.dbNumber || orderId }), {
     parse_mode: 'Markdown',
-    ...mainMenu(),
+    ...mainMenu(ctx.lang),
   });
 }
 

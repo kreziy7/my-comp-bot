@@ -2,8 +2,9 @@ const { Telegraf, Scenes, session } = require('telegraf');
 const cfg = require('./config');
 const catalog = require('./catalog/catalog');
 const cart = require('./cart');
-const { t, productCard, renderCart, escapeMd } = require('./utils/format');
-const { mainMenu, buyMenuKb, serviceMenuKb } = require('./keyboards/main');
+const { t, tAll, productCard, renderCart, escapeMd } = require('./utils/format');
+const { mainMenu, buyMenuKb, serviceMenuKb, langPickerKb } = require('./keyboards/main');
+const { getLang, setLang, hasLang } = require('./utils/lang');
 const {
   topGroupsKb, sectionsKb, productListKb, productCardKb, cartKb,
 } = require('./keyboards/inline');
@@ -20,36 +21,68 @@ const bot = new Telegraf(cfg.botToken);
 
 const stage = new Scenes.Stage([searchScene, orderScene, serviceScene]);
 bot.use(session());
+
+// Attach per-user locale helpers — must run BEFORE stage so scene handlers see ctx.t.
+bot.use(async (ctx, next) => {
+  if (ctx.from) {
+    ctx.lang = getLang(ctx.from.id);
+    ctx.t = (key, vars) => t(ctx.lang, key, vars);
+  } else {
+    ctx.lang = 'uz';
+    ctx.t = (key, vars) => t('uz', key, vars);
+  }
+  return next();
+});
+
 bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
-  await ctx.reply(t('start_welcome'), { parse_mode: 'Markdown', ...mainMenu() });
+  if (!hasLang(ctx.from.id)) {
+    await ctx.reply(t('uz', 'lang_pick'), langPickerKb());
+    return;
+  }
+  await ctx.reply(ctx.t('start_welcome'), { parse_mode: 'Markdown', ...mainMenu(ctx.lang) });
 });
 
-bot.help(async (ctx) => ctx.reply(t('help')));
-bot.command('about', async (ctx) => ctx.reply(t('about'), { parse_mode: 'Markdown' }));
+bot.command('lang', async (ctx) => {
+  await ctx.reply(t('uz', 'lang_pick'), langPickerKb());
+});
+
+bot.action(/^lang:set:(uz|ru)$/, async (ctx) => {
+  const newLang = ctx.match[1];
+  setLang(ctx.from.id, newLang);
+  ctx.lang = newLang;
+  ctx.t = (key, vars) => t(newLang, key, vars);
+  await ctx.answerCbQuery();
+  try { await ctx.editMessageReplyMarkup(undefined); } catch (_) {}
+  await ctx.reply(ctx.t('lang_changed'));
+  await ctx.reply(ctx.t('start_welcome'), { parse_mode: 'Markdown', ...mainMenu(newLang) });
+});
+
+bot.help(async (ctx) => ctx.reply(ctx.t('help')));
+bot.command('about', async (ctx) => ctx.reply(ctx.t('about'), { parse_mode: 'Markdown' }));
 bot.command('myid', async (ctx) => {
-  await ctx.reply(`Sizning chat_id: \`${ctx.chat.id}\`\nUser id: \`${ctx.from.id}\``, { parse_mode: 'Markdown' });
+  await ctx.reply(`chat_id: \`${ctx.chat.id}\`\nuser_id: \`${ctx.from.id}\``, { parse_mode: 'Markdown' });
 });
 
-// New top-level menu
-bot.hears(t('menu_buy'), async (ctx) => {
-  await ctx.reply(t('buy_intro'), { parse_mode: 'Markdown', ...buyMenuKb() });
+// Top-level reply-keyboard buttons — match in any supported language.
+bot.hears(tAll('menu_buy'), async (ctx) => {
+  await ctx.reply(ctx.t('buy_intro'), { parse_mode: 'Markdown', ...buyMenuKb(ctx.lang) });
 });
 
-bot.hears(t('menu_service'), async (ctx) => {
-  await ctx.reply(t('service_intro'), { parse_mode: 'Markdown', ...serviceMenuKb() });
+bot.hears(tAll('menu_service'), async (ctx) => {
+  await ctx.reply(ctx.t('service_intro'), { parse_mode: 'Markdown', ...serviceMenuKb(ctx.lang) });
 });
 
-bot.hears(t('menu_contact'), async (ctx) => {
-  await ctx.reply(t('contact_info'), { parse_mode: 'Markdown' });
+bot.hears(tAll('menu_contact'), async (ctx) => {
+  await ctx.reply(ctx.ctx.t('contact_info'), { parse_mode: 'Markdown' });
 });
 
 // Buy sub-menu actions
 bot.action('buy:catalog', async (ctx) => {
   const groups = catalog.getTopGroups();
   await ctx.answerCbQuery();
-  await ctx.reply(t('browse_pick_group'), { parse_mode: 'Markdown', ...topGroupsKb(groups) });
+  await ctx.reply(ctx.t('browse_pick_group'), { parse_mode: 'Markdown', ...topGroupsKb(groups) });
 });
 
 bot.action('buy:search', async (ctx) => {
@@ -76,7 +109,7 @@ bot.action('service:start:legal', async (ctx) => {
 
 async function sendCart(ctx, items) {
   if (!items || items.size === 0) {
-    await ctx.reply(t('cart_empty'));
+    await ctx.reply(ctx.t('cart_empty'));
     return;
   }
   const { text } = renderCart(items, catalog);
@@ -87,7 +120,7 @@ async function sendCart(ctx, items) {
     const short = (p.description.length > 25 ? p.description.slice(0, 22) + '...' : p.description);
     kbItems.push({ pid, short });
   }
-  await ctx.reply(text, { parse_mode: 'Markdown', ...cartKb(kbItems) });
+  await ctx.reply(text, { parse_mode: 'Markdown', ...cartKb(kbItems, ctx.lang) });
 }
 
 bot.action('noop', async (ctx) => ctx.answerCbQuery());
@@ -95,7 +128,7 @@ bot.action('noop', async (ctx) => ctx.answerCbQuery());
 bot.action('cat:_back', async (ctx) => {
   const groups = catalog.getTopGroups();
   await ctx.answerCbQuery();
-  await ctx.editMessageText(t('browse_pick_group'), { parse_mode: 'Markdown', ...topGroupsKb(groups) });
+  await ctx.editMessageText(ctx.t('browse_pick_group'), { parse_mode: 'Markdown', ...topGroupsKb(groups) });
 });
 
 bot.action(/^cat:(.+)$/, async (ctx) => {
@@ -108,9 +141,9 @@ bot.action(/^cat:(.+)$/, async (ctx) => {
   }
   const sections = catalog.getSections(groupId);
   await ctx.answerCbQuery();
-  await ctx.editMessageText(t('browse_pick_section', { group: group.title }), {
+  await ctx.editMessageText(ctx.t('browse_pick_section', { group: group.title }), {
     parse_mode: 'Markdown',
-    ...sectionsKb(groupId, sections),
+    ...sectionsKb(groupId, sections, ctx.lang),
   });
 });
 
@@ -124,7 +157,7 @@ bot.action(/^sec:([^:]+):([^:]+):(\d+)$/, async (ctx) => {
   }
   const { products, total, pages, page: safePage } = catalog.getProductsInSection(sectionId, page);
   if (total === 0) {
-    await ctx.answerCbQuery(t('browse_section_empty'));
+    await ctx.answerCbQuery(ctx.t('browse_section_empty'));
     return;
   }
   await ctx.answerCbQuery();
@@ -132,10 +165,10 @@ bot.action(/^sec:([^:]+):([^:]+):(\d+)$/, async (ctx) => {
   try {
     await ctx.editMessageText(header, {
       parse_mode: 'Markdown',
-      ...productListKb(groupId, sectionId, products, safePage, pages),
+      ...productListKb(groupId, sectionId, products, safePage, pages, ctx.lang),
     });
   } catch (e) {
-    await ctx.reply(header, { parse_mode: 'Markdown', ...productListKb(groupId, sectionId, products, safePage, pages) });
+    await ctx.reply(header, { parse_mode: 'Markdown', ...productListKb(groupId, sectionId, products, safePage, pages, ctx.lang) });
   }
 });
 
@@ -147,7 +180,7 @@ bot.action(/^prod:(.+)$/, async (ctx) => {
     return;
   }
   await ctx.answerCbQuery();
-  await ctx.reply(productCard(p), { parse_mode: 'Markdown', ...productCardKb(p) });
+  await ctx.reply(productCard(p), { parse_mode: 'Markdown', ...productCardKb(p, null, ctx.lang) });
 });
 
 bot.action(/^add:(.+)$/, async (ctx) => {
@@ -158,7 +191,7 @@ bot.action(/^add:(.+)$/, async (ctx) => {
     return;
   }
   if (p.priceUsd == null) {
-    await ctx.answerCbQuery(t('product_cant_add_no_price'), { show_alert: true });
+    await ctx.answerCbQuery(ctx.t('product_cant_add_no_price'), { show_alert: true });
     return;
   }
   cart.addToCart(ctx.from.id, p.id, 1);
@@ -167,17 +200,17 @@ bot.action(/^add:(.+)$/, async (ctx) => {
 
 bot.action('contact:price', async (ctx) => {
   await ctx.answerCbQuery();
-  await ctx.reply(t('contact_info'), { parse_mode: 'Markdown' });
+  await ctx.reply(ctx.t('contact_info'), { parse_mode: 'Markdown' });
 });
 
 bot.action(/^cart:rm:(.+)$/, async (ctx) => {
   const id = ctx.match[1];
   cart.removeFromCart(ctx.from.id, id);
-  await ctx.answerCbQuery(t('cart_item_removed'));
+  await ctx.answerCbQuery(ctx.t('cart_item_removed'));
   const items = cart.getCart(ctx.from.id);
   if (!items || items.size === 0) {
     try {
-      await ctx.editMessageText(t('cart_empty'));
+      await ctx.editMessageText(ctx.t('cart_empty'));
     } catch (_) {}
     return;
   }
@@ -190,7 +223,7 @@ bot.action(/^cart:rm:(.+)$/, async (ctx) => {
     kbItems.push({ pid, short });
   }
   try {
-    await ctx.editMessageText(text, { parse_mode: 'Markdown', ...cartKb(kbItems) });
+    await ctx.editMessageText(text, { parse_mode: 'Markdown', ...cartKb(kbItems, ctx.lang) });
   } catch (_) {}
 });
 
@@ -198,9 +231,9 @@ bot.action('cart:clear', async (ctx) => {
   cart.clearCart(ctx.from.id);
   await ctx.answerCbQuery();
   try {
-    await ctx.editMessageText(t('cart_clear_confirm'));
+    await ctx.editMessageText(ctx.t('cart_clear_confirm'));
   } catch (_) {
-    await ctx.reply(t('cart_clear_confirm'));
+    await ctx.reply(ctx.t('cart_clear_confirm'));
   }
 });
 
@@ -290,7 +323,7 @@ bot.command('order', async (ctx) => {
 
 bot.catch((err, ctx) => {
   console.error(`[bot] Error for update ${ctx.update.update_id}:`, err);
-  try { ctx.reply(t('error_generic')); } catch (_) {}
+  try { ctx.reply(t(getLang(ctx.from?.id), 'error_generic')); } catch (_) {}
 });
 
 module.exports = bot;

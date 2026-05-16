@@ -93,7 +93,7 @@
   "contact_info": "📞 *Age Computers*\n\n📱 Telefon: [+998 88-331-11-33](tel:+998883311133)\n📍 Manzil: [Farogat street, Toshkent](https://maps.apple.com/place?map=explore&address=Farogat+street%2C+Uzbekistan&coordinate=41.370019%2C69.285512&name=Farogat+street)\n🕐 Ish vaqti: 9:00 — 18:30",
 
   "about": "*Age Computers Bot*\n\nKomputer, noutbuk, printer va aksessuarlar do'koni.\nMahsulotlarni tanlang, savatga qoʻshing va zakaz bering.",
-  "help": "Buyruqlar:\n/start — boshlash\n/help — yordam\n/about — bot haqida\n/myid — sizning chat ID",
+  "help": "Buyruqlar:\n/start — boshlash\n/help — yordam\n/about — bot haqida\n/lang — tilni o'zgartirish\n/myid — sizning chat ID",
 
   "error_generic": "Texnik xato. Qaytadan urinib koʻring.",
   "back": "⬅ Orqaga",
@@ -113,5 +113,10 @@
   "status_service_waiting_parts": "⏳ Ehtiyot qism kutilmoqda",
   "status_service_ready": "✔️ Tayyor — olib keting",
   "status_service_delivered": "📤 Berildi",
-  "status_service_cancelled": "❌ Bekor qilindi"
+  "status_service_cancelled": "❌ Bekor qilindi",
+
+  "lang_pick": "🌐 Tilni tanlang / Выберите язык:",
+  "lang_btn_uz": "🇺🇿 O'zbekcha",
+  "lang_btn_ru": "🇷🇺 Русский",
+  "lang_changed": "✅ Til o'zgartirildi: O'zbekcha."
 }

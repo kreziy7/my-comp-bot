@@ -6,16 +6,16 @@ function topGroupsKb(groups) {
   return Markup.inlineKeyboard(rows);
 }
 
-function sectionsKb(groupId, sections) {
+function sectionsKb(groupId, sections, lang) {
   const rows = sections.map((s) => [
     Markup.button.callback(`${s.title}  (${s.count})`, `sec:${groupId}:${s.id}:0`),
   ]);
-  rows.push([Markup.button.callback(t('browse_back_to_groups'), 'cat:_back')]);
+  rows.push([Markup.button.callback(t(lang, 'browse_back_to_groups'), 'cat:_back')]);
   return Markup.inlineKeyboard(rows);
 }
 
-function productListKb(groupId, sectionId, products, page, pages) {
-  const rows = products.map((p, i) => {
+function productListKb(groupId, sectionId, products, page, pages, lang) {
+  const rows = products.map((p) => {
     const desc = p.description.length > 36 ? p.description.slice(0, 33) + '...' : p.description;
     const price = p.priceUsd != null ? `$${p.priceUsd}` : '—';
     return [Markup.button.callback(`${desc}  ${price}`, `prod:${p.id}`)];
@@ -25,19 +25,19 @@ function productListKb(groupId, sectionId, products, page, pages) {
   navRow.push(Markup.button.callback(`${page + 1}/${pages}`, `noop`));
   if (page < pages - 1) navRow.push(Markup.button.callback('➡', `sec:${groupId}:${sectionId}:${page + 1}`));
   if (navRow.length) rows.push(navRow);
-  rows.push([Markup.button.callback(t('browse_back_to_sections'), `cat:${groupId}`)]);
+  rows.push([Markup.button.callback(t(lang, 'browse_back_to_sections'), `cat:${groupId}`)]);
   return Markup.inlineKeyboard(rows);
 }
 
-function productCardKb(product, fromSec) {
+function productCardKb(product, fromSec, lang) {
   const rows = [];
   if (product.priceUsd != null) {
-    rows.push([Markup.button.callback(t('product_add_to_cart'), `add:${product.id}`)]);
+    rows.push([Markup.button.callback(t(lang, 'product_add_to_cart'), `add:${product.id}`)]);
   } else {
-    rows.push([Markup.button.callback(t('product_contact_for_price'), `contact:price`)]);
+    rows.push([Markup.button.callback(t(lang, 'product_contact_for_price'), `contact:price`)]);
   }
   if (fromSec) {
-    rows.push([Markup.button.callback(t('browse_back_to_list'), `sec:${fromSec.groupId}:${fromSec.sectionId}:${fromSec.page}`)]);
+    rows.push([Markup.button.callback(t(lang, 'browse_back_to_list'), `sec:${fromSec.groupId}:${fromSec.sectionId}:${fromSec.page}`)]);
   }
   return Markup.inlineKeyboard(rows);
 }
@@ -51,21 +51,21 @@ function searchResultsKb(products) {
   return Markup.inlineKeyboard(rows);
 }
 
-function cartKb(items) {
+function cartKb(items, lang) {
   const rows = items.map((it) => [Markup.button.callback(`❌ ${it.short}`, `cart:rm:${it.pid}`)]);
   if (items.length > 0) {
     rows.push([
-      Markup.button.callback(t('cart_clear'), 'cart:clear'),
-      Markup.button.callback(t('cart_checkout'), 'cart:checkout'),
+      Markup.button.callback(t(lang, 'cart_clear'), 'cart:clear'),
+      Markup.button.callback(t(lang, 'cart_checkout'), 'cart:checkout'),
     ]);
   }
   return Markup.inlineKeyboard(rows);
 }
 
-function orderConfirmKb() {
+function orderConfirmKb(lang) {
   return Markup.inlineKeyboard([
-    [Markup.button.callback(t('order_confirm_yes'), 'order:yes')],
-    [Markup.button.callback(t('order_confirm_no'), 'order:no')],
+    [Markup.button.callback(t(lang, 'order_confirm_yes'), 'order:yes')],
+    [Markup.button.callback(t(lang, 'order_confirm_no'), 'order:no')],
   ]);
 }
 
